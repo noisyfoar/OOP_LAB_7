@@ -25,17 +25,19 @@
         {
             Size newSize = new(shapeSize.Width + delta, shapeSize.Height + delta);
 
-            if (newSize.Width < 10)
+            int min_size = 60;
+
+            if (newSize.Width < min_size)
             {
-                newSize.Width = 10;
+                newSize.Width = min_size;
             }
             if(newSize.Width + p0.X > imageSize.Width)
             {
                 newSize.Width = imageSize.Width - p0.X;
             }
-            if(newSize.Height < 10)
+            if(newSize.Height < min_size)
             {
-                newSize.Height = 10;
+                newSize.Height = min_size;
             }
             if (newSize.Height + p0.Y > imageSize.Height)
             {
@@ -84,7 +86,7 @@
 
             if( new_p0.X + shapeSize.Width > imageSize.Width)
             {
-                new_p0.X = imageSize.Width - shapeSize.Width;
+                new_p0.X = imageSize.Width - shapeSize.Width - 3;
             }
             if(new_p0.X < 0)
             {
@@ -92,7 +94,7 @@
             }
             if(new_p0.Y + shapeSize.Height > imageSize.Height)
             {
-                new_p0.Y = imageSize.Height - shapeSize.Height;
+                new_p0.Y = imageSize.Height - shapeSize.Height - 3;
             }
             if(new_p0.Y < 0)
             {

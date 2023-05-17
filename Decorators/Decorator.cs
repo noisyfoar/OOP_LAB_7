@@ -4,23 +4,33 @@ namespace OOP_LAB_4.Decorators
 {
     public abstract class Decorator : Shape
     {
-        public Shape decoratedShape;
-        public Decorator() : base()
+        protected Shape decoratedShape;
+
+        public Decorator(Shape new_shape) : base(new_shape)
         {
-            
+            if (new_shape is Decorator)
+            {
+                decoratedShape = ((Decorator)new_shape).decoratedShape;
+            }
+            else
+            {
+
+                decoratedShape = new_shape;
+            }
+            getInfoFromShape();
         }
+
+        public Shape getShape()
+        {
+            return decoratedShape;
+        }
+
+
         protected void getInfoFromShape()
         {
             shapeSize = decoratedShape.getSize();
             p0 = decoratedShape.getPoint();
         }
-
-        public Decorator(Shape new_shape) : base(new_shape)
-        {
-            decoratedShape = new_shape;
-            getInfoFromShape();
-        }
-
         public override void move(Size imageSize, int dx, int dy)
         {
             decoratedShape.move(imageSize, dx, dy);

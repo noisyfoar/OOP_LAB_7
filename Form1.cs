@@ -25,13 +25,13 @@ namespace OOP_LAB_4
 
         CONST_SHAPE selectedShape;
 
-        MyShapeFactory shapeFactory;
+        ShapeFactory shapeFactory;
 
         public Form1()
         {
             shapes = new();
             selectedShapes = new();
-            shapeFactory = new();
+            shapeFactory = new MyShapeFactory();
             InitializeComponent();
 
 
@@ -71,7 +71,6 @@ namespace OOP_LAB_4
             {
                 Console.WriteLine(shape.getName() + " " + shape.getPoint().ToString() + " " + shape.getSize().ToString() );
             }
-            g.Clear(SystemColors.Control);
         }
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
@@ -108,12 +107,9 @@ namespace OOP_LAB_4
                 {
                     for (int j = 0; j < shapes.Count; ++j)
                     {
-                        if (selectedShapes.Contains(shapes[j]))
-                        {
-                            selectedShapes.Remove(shapes[j]);
-                        }
                         shapes[j] = new UnMarked(shapes[j]);
                     }
+                    selectedShapes.Clear();
                 }
                 createShape(selectedShape);
             }
@@ -131,19 +127,10 @@ namespace OOP_LAB_4
         
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
-            CursorX = e.X; CursorY = e.Y;
             if(create)
             {
                 create = false;
             }
-            int c1 = 0, c2 = 0;
-            foreach(Shape shape in shapes) 
-            {
-                if (shape.getName() == CONST_SHAPE.Marked) c1++;
-                else if(shape.getName() == CONST_SHAPE.UnMarked) c2++;
-            }
-            label1.Text = selectedShapes.Count.ToString() + " " + shapes.Count.ToString() + " " + c1.ToString() + " " + c2.ToString();
-            printList();
             panel1.Invalidate();
         }
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -180,7 +167,7 @@ namespace OOP_LAB_4
             {
                 for (int j = 0; j < selectedShapes.Count; ++j)
                 {
-                    selectedShapes[j].resize(panel1.Size, -10);
+                    selectedShapes[j].resize(panel1.Size, delta);
                 }
                 delta = 0;
             }
@@ -233,7 +220,7 @@ namespace OOP_LAB_4
                 if (selectedShapes[i].getName() == CONST_SHAPE.Group)
                 {
                     temp.Add(selectedShapes[i]);
-                    ((CGroup)((Decorator)selectedShapes[i]).decoratedShape).unGroup(selectedShapes);
+                    ((CGroup)((Decorator)selectedShapes[i]).getShape()).unGroup(selectedShapes);
                 }
             }
             for(int i = 0; i < temp.Count; ++i)
