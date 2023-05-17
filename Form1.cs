@@ -1,6 +1,8 @@
 using OOP_LAB_4.Decorators;
 using OOP_LAB_4.factory;
 using OOP_LAB_4.figures;
+using System.Collections.Specialized;
+using System.Runtime.InteropServices;
 
 namespace OOP_LAB_4
 {
@@ -23,7 +25,7 @@ namespace OOP_LAB_4
 
         CONST_SHAPE selectedShape;
 
-        salavatShapeFactory shapeFactory;
+        MyShapeFactory shapeFactory;
 
         public Form1()
         {
@@ -51,27 +53,25 @@ namespace OOP_LAB_4
             g = panel1.CreateGraphics();
             DoubleBuffered = true;
         }
-        private Shape decorate(Shape shape)
+
+        public void createShape(CONST_SHAPE choosenShape)
         {
-            if(shape.getName() == CONST_SHAPE.Decorator)
-            {
-                return shape;
-            }
-            else
-            {
-                return new Decorator(shape);
-            }
+            createdShape = shapeFactory.create(choosenShape);
+            createdShape = new Marked(createdShape);
+            createdShape.setColor(color);
+
+            shapes.Add(createdShape);
+            selectedShapes.Add(createdShape);
         }
-        private Shape undecorate(Shape shape)
+
+        public void printList()
         {
-            if (shape.getName() == CONST_SHAPE.Decorator)
+            Console.WriteLine("- - - \n");
+            foreach (Shape shape in shapes)
             {
-                return ((Decorator)shape).decoratedShape;
+                Console.WriteLine(shape.getName() + " " + shape.getPoint().ToString() + " " + shape.getSize().ToString() );
             }
-            else
-            {
-                return shape;
-            }
+            g.Clear(SystemColors.Control);
         }
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
@@ -90,13 +90,14 @@ namespace OOP_LAB_4
                             if ( j != i )
                             {
                                 selectedShapes.Remove(shapes[j]);
-                                undecorate(shapes[j]);
                             }
+                            shapes[j] = new UnMarked(shapes[j]);
                         }
                     }
-                    decorate(shapes[i]);
+
                     if (!selectedShapes.Contains(shapes[i]))
                     {
+                        shapes[i] = new Marked(shapes[i]);
                         selectedShapes.Add(shapes[i]);
                     }
                 }
@@ -111,15 +112,10 @@ namespace OOP_LAB_4
                         {
                             selectedShapes.Remove(shapes[j]);
                         }
-                        undecorate(shapes[j]);
+                        shapes[j] = new UnMarked(shapes[j]);
                     }
                 }
-                createdShape = shapeFactory.create(selectedShape);
-                createdShape.resize(panel1.Size, CursorX, CursorY, CursorX, CursorY);
-                decorate(createdShape);
-                createdShape.setColor(color);
-                shapes.Add(createdShape);
-                selectedShapes.Add(createdShape);
+                createShape(selectedShape);
             }
             panel1.Invalidate();
         }
@@ -140,7 +136,14 @@ namespace OOP_LAB_4
             {
                 create = false;
             }
-            label1.Text = selectedShapes.Count.ToString() + " " + shapes.Count.ToString();
+            int c1 = 0, c2 = 0;
+            foreach(Shape shape in shapes) 
+            {
+                if (shape.getName() == CONST_SHAPE.Marked) c1++;
+                else if(shape.getName() == CONST_SHAPE.UnMarked) c2++;
+            }
+            label1.Text = selectedShapes.Count.ToString() + " " + shapes.Count.ToString() + " " + c1.ToString() + " " + c2.ToString();
+            printList();
             panel1.Invalidate();
         }
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -260,11 +263,18 @@ namespace OOP_LAB_4
         {
             pictureBox_color.BackColor = color;
         }
-
         private void toolStripTextBoxTriangle_Click(object sender, EventArgs e)
         {
             selectedShape = CONST_SHAPE.Triangle;
         }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            AllocConsole();
+        }
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool AllocConsole();
+
 
     }
    

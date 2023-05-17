@@ -1,9 +1,10 @@
-﻿using OOP_LAB_4.figures;
+﻿using OOP_LAB_4.Decorators;
+using OOP_LAB_4.figures;
 
 namespace OOP_LAB_4.factory
 {
     
-    public class salavatShapeFactory : shapeFactory
+    public class MyShapeFactory : ShapeFactory
     {
         public override Shape create(CONST_SHAPE type)
         {

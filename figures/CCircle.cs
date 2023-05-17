@@ -21,14 +21,12 @@
         }
         public override bool inShape(int x, int y)
         {
-
             double p = ((double)Math.Pow(p0.X + shapeSize.Width/2 - x, 2) / (double)Math.Pow(shapeSize.Width/2, 2)) +
                 ((double)Math.Pow(p0.Y + shapeSize.Height/2 - y, 2) / (double)Math.Pow(shapeSize.Height/2, 2));
 
             if (p <= 1)
-            {
                 return true;
-            }
+
             return false;
         }
     }

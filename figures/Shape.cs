@@ -9,10 +9,11 @@
 
         public Shape()
         {
+            color = new Color();
             shapeSize = new Size();
             p0 = new Point();
         }
-        public Shape(Shape shape)
+        public Shape(Shape shape) : this()
         {
             color = shape.getColor();
             shapeSize = shape.getSize();

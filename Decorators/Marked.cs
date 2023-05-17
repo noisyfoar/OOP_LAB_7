@@ -2,13 +2,9 @@
 
 namespace OOP_LAB_4.Decorators
 {
-    public class marked : Decorator
+    public class Marked : Decorator
     {
-        public marked() : base()
-        {
-            name = CONST_SHAPE.Marked;
-        }
-        public marked(Shape new_shape) : base(new_shape)
+        public Marked(Shape new_shape) : base(new_shape)
         {
             name = CONST_SHAPE.Marked;
         }

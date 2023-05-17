@@ -15,14 +15,23 @@ namespace OOP_LAB_4.figures
         public CGroup(Shape group) : base(group) 
         {
             shapes = new List<Shape>();
-
+            if(group.getName() == CONST_SHAPE.Group)
+            {
+                add(((CGroup)group).shapes);
+            }
             name = CONST_SHAPE.Group;
         }
         
         
-        public virtual void add(Size imageSize, List<Shape> new_shapes)
+        public virtual void add(List<Shape> new_shapes)
         {
-
+            foreach(Shape shape in new_shapes)
+            {
+                if (!shapes.Contains(shape))
+                {
+                    shapes.Add(shape);
+                }
+            }
         }
         public void new_size(Size imageSize)
         {
@@ -58,10 +67,8 @@ namespace OOP_LAB_4.figures
 
             move(imageSize, 0, 0);
         }
-
         public override void setColor(Color new_color)
         {
-            base.setColor(new_color);
             foreach(Shape shape in shapes)
             {
                 shape.setColor(new_color);
@@ -69,7 +76,6 @@ namespace OOP_LAB_4.figures
         }
         public override void Draw(Graphics g)
         {
-            setColor(color);
             foreach (Shape shape in shapes)
             {
                 shape.Draw(g);
@@ -83,11 +89,23 @@ namespace OOP_LAB_4.figures
 
             return false;
         }
+        public override void resize(Size imageSize, int delta)
+        {
+            base.resize(imageSize, delta);
+            foreach(Shape shape in shapes)
+            {
+                shape.resize(imageSize, delta);
+            }
+        }
         public void unGroup(List<Shape> new_shapes)
         {
-            foreach(Shape shape in shapes)
-                new_shapes.Add(shape);
-
+            foreach (Shape shape in shapes)
+            {
+                if (!new_shapes.Contains(shape))
+                {
+                    new_shapes.Add(shape);
+                }
+            }
             shapes.Clear();
         }
     }

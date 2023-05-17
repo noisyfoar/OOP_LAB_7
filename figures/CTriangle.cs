@@ -9,28 +9,19 @@ using System.Drawing;
             public Help_vector[] vectors { get; set; }
             public Point[] points { get; set; }
 
-            public CTriangle()
+            public CTriangle() : base()
             {
-                shapeSize = new Size();
-                p0 = new Point();
-                name = CONST_SHAPE.Triangle;
 
                 vectors = new Help_vector[6];
                 points= new Point[3];
+                name = CONST_SHAPE.Triangle;
             }
-            public CTriangle(Shape shape)
+
+            public CTriangle(Shape shape) : base(shape)
             {
                 vectors = new Help_vector[6];
-
                 points = new Point[3];
 
-                shapeSize = new Size();
-                p0 = new Point();
-
-
-                color = shape.getColor();
-                shapeSize = shape.getSize();
-                p0= shape.getPoint();
                 name = CONST_SHAPE.Triangle;
             }
 
