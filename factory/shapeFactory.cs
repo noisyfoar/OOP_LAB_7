@@ -4,6 +4,6 @@ namespace OOP_LAB_4.factory
 {
     public abstract class ShapeFactory
     {
-        public abstract Shape create(CONST_SHAPE type);
+        public abstract Shape create(char type);
     }
 }

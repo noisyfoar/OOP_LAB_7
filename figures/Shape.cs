@@ -1,4 +1,6 @@
-﻿namespace OOP_LAB_4.figures
+﻿using OOP_LAB_4.factory;
+
+namespace OOP_LAB_4.figures
 {
     public abstract class Shape
     {
@@ -20,6 +22,21 @@
             p0 = shape.getPoint();
         }
         public abstract void Draw(Graphics g);
+        public virtual void save(StreamWriter writer)
+        {
+            writer.WriteLine((char)name);
+            writer.WriteLine(p0.X);
+            writer.WriteLine(p0.Y);
+            writer.WriteLine(shapeSize.Width);
+            writer.WriteLine(shapeSize.Height);
+            writer.WriteLine(color.Name);
+        }
+        public virtual void load(StreamReader reader, ShapeFactory factory)
+        {
+            p0 = new(Convert.ToInt32(reader.ReadLine()), Convert.ToInt32(reader.ReadLine()));
+            shapeSize = new Size(Convert.ToInt32(reader.ReadLine()), Convert.ToInt32(reader.ReadLine()));
+            color = Color.FromName(reader.ReadLine());
+        }
         public virtual void resize(Size imageSize, int delta)
         {
             Size newSize = new(shapeSize.Width + delta, shapeSize.Height + delta);

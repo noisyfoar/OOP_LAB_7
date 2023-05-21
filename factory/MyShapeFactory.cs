@@ -4,20 +4,20 @@ namespace OOP_LAB_4.factory
 {
     public class MyShapeFactory : ShapeFactory
     {
-        public override Shape create(CONST_SHAPE type)
+        public override Shape create(char type)
         {
             switch (type)
             {
-                case CONST_SHAPE.Circle:
+                case (char)CONST_SHAPE.Circle:
                     return new CCircle();
 
-                case CONST_SHAPE.Rectangle:
+                case (char)CONST_SHAPE.Rectangle:
                     return new CRectangle();
 
-                case CONST_SHAPE.Triangle:
+                case (char)CONST_SHAPE.Triangle:
                     return new CTriangle();
 
-                case CONST_SHAPE.Group:
+                case (char)CONST_SHAPE.Group:
                     return new CGroup();
 
                 default:

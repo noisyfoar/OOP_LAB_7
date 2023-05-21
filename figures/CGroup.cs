@@ -1,4 +1,5 @@
 ﻿using OOP_LAB_4.Decorators;
+using OOP_LAB_4.factory;
 
 namespace OOP_LAB_4.figures
 {
@@ -23,6 +24,29 @@ namespace OOP_LAB_4.figures
                 }
             }
             name = CONST_SHAPE.Group;
+        }
+
+        public override void load(StreamReader reader, ShapeFactory factory)
+        {
+            int count = Convert.ToInt32(reader.ReadLine());  
+            for(int i = 0; i < count; i++) 
+            {
+                Shape shape = factory.create(Convert.ToChar(reader.ReadLine()));
+                if(shape != null)
+                {
+                    shape.load(reader, factory);
+                    shapes.Add(shape);
+                }
+            }
+        }
+        public override void save(StreamWriter writer)
+        {
+            writer.WriteLine(name);
+            writer.WriteLine(shapes.Count);
+            foreach(Shape shape in shapes)
+            {
+                shape.save(writer);
+            }
         }
         public void add(Size imageSize, Shape shape)
         {

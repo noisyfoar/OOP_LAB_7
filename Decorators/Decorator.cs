@@ -1,4 +1,5 @@
-﻿using OOP_LAB_4.figures;
+﻿using OOP_LAB_4.factory;
+using OOP_LAB_4.figures;
 
 namespace OOP_LAB_4.Decorators
 {
@@ -23,6 +24,16 @@ namespace OOP_LAB_4.Decorators
         public Shape getShape()
         {
             return decoratedShape;
+        }
+
+        public override void load(StreamReader reader, ShapeFactory factory)
+        {
+            decoratedShape.load(reader, factory);
+        }
+
+        public override void save(StreamWriter writer)
+        {
+            decoratedShape.save(writer);
         }
 
         protected void getInfoFromShape()

@@ -1,7 +1,6 @@
 using OOP_LAB_4.Decorators;
 using OOP_LAB_4.factory;
 using OOP_LAB_4.figures;
-using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 
 namespace OOP_LAB_4
@@ -9,26 +8,26 @@ namespace OOP_LAB_4
 
     public partial class Form1 : Form
     {
-        List<Shape> shapes;
-
         Shape createdShape;
 
-        int CursorX, CursorY;
+        CONST_SHAPE selectedShape;
+        ShapeFactory shapeFactory;
+
 
         Color color;
-
-        bool create;
-
         Graphics g;
 
 
-        CONST_SHAPE selectedShape;
+        int CursorX, CursorY;
+        bool create;
+        string filename = "";
 
-        ShapeFactory shapeFactory;
+        ShapeArray shapeArray;
+
 
         public Form1()
         {
-            shapes = new();
+            shapeArray = new();
             shapeFactory = new MyShapeFactory();
             InitializeComponent();
 
@@ -43,6 +42,7 @@ namespace OOP_LAB_4
 
             selectedShape = CONST_SHAPE.Circle;
 
+            shapeArray = new ShapeArray();
 
             CursorX = 0;
             CursorY = 0;
@@ -54,7 +54,7 @@ namespace OOP_LAB_4
         
         public void createShape(CONST_SHAPE choosenShape)
         {
-            createdShape = shapeFactory.create(choosenShape);
+            createdShape = shapeFactory.create((char)choosenShape);
             createdShape = new Marked(createdShape);
             createdShape.setColor(color);
         }
@@ -63,22 +63,22 @@ namespace OOP_LAB_4
         {
             CursorX = e.X; CursorY = e.Y;
             create = true;
-            for(int i = 0; i < shapes.Count; ++i)
+            for(int i = 0; i < shapeArray.shapes.Count; ++i)
             {
-                if (shapes[i].inShape(CursorX, CursorY))
+                if (shapeArray.shapes[i].inShape(CursorX, CursorY))
                 {
                     create = false;
                     if (Form.ModifierKeys != Keys.Control)
                     {
-                        for (int j = 0; j < shapes.Count; ++j)
+                        for (int j = 0; j < shapeArray.shapes.Count; ++j)
                         {
-                            shapes[j] = new UnMarked(shapes[j]);
+                            shapeArray.shapes[j] = new UnMarked(shapeArray.shapes[j]);
                         }
                     }
 
-                    if (shapes[i] is not Marked)
+                    if (shapeArray.shapes[i] is not Marked)
                     {
-                        shapes[i] = new Marked(shapes[i]);
+                        shapeArray.shapes[i] = new Marked(shapeArray.shapes[i]);
                     }
                 }
             }
@@ -86,13 +86,13 @@ namespace OOP_LAB_4
             {
                 if (Form.ModifierKeys != Keys.Control)
                 {
-                    for (int j = 0; j < shapes.Count; ++j)
+                    for (int j = 0; j < shapeArray.shapes.Count; ++j)
                     {
-                        shapes[j] = new UnMarked(shapes[j]);
+                        shapeArray.shapes[j] = new UnMarked(shapeArray.shapes[j]);
                     }
                 }
                 createShape(selectedShape);
-                shapes.Add(createdShape);
+                shapeArray.shapes.Add(createdShape);
             }
             panel1.Invalidate();
         }
@@ -130,12 +130,12 @@ namespace OOP_LAB_4
                 case Keys.L:
                     delta = -10;break;
                 case Keys.Delete:
-                    shapes.Clear();
+                    shapeArray.shapes.Clear();
                     break;
             }
             if(dx != 0 || dy != 0)
             {
-                foreach (Shape temp in shapes)
+                foreach (Shape temp in shapeArray.shapes)
                 {
                     if(temp is Marked)
                         temp.move(panel1.Size, dx, dy);
@@ -144,7 +144,7 @@ namespace OOP_LAB_4
             }
             if(delta != 0)
             {
-                foreach (Shape temp in shapes)
+                foreach (Shape temp in shapeArray.shapes)
                 {
                     if(temp is Marked)
                         temp.resize(panel1.Size, delta);
@@ -163,25 +163,25 @@ namespace OOP_LAB_4
 
             createShape(CONST_SHAPE.Group);
 
-            for(int i = 0; i < shapes.Count; i++)
+            for(int i = 0; i < shapeArray.shapes.Count; i++)
             {
-                if (shapes[i] is Marked)
+                if (shapeArray.shapes[i] is Marked)
                 {
-                    ((CGroup)((Decorator)createdShape).getShape()).add(panel1.Size,shapes[i]);
+                    ((CGroup)((Decorator)createdShape).getShape()).add(panel1.Size,shapeArray.shapes[i]);
                 }
                 else
                 {
-                    shapes[i] = new UnMarked(shapes[i]);
-                    to_keep.Add(shapes[i]);
+                    shapeArray.shapes[i] = new UnMarked(shapeArray.shapes[i]);
+                    to_keep.Add(shapeArray.shapes[i]);
                 }
             }
-            shapes.Clear();
+            shapeArray.shapes.Clear();
 
             for (int i = 0; i < to_keep.Count; i++)
             {
-                shapes.Add(to_keep[i]);
+                shapeArray.shapes.Add(to_keep[i]);
             }
-            shapes.Add(createdShape);
+            shapeArray.shapes.Add(createdShape);
             to_keep.Clear();
             g.Clear(SystemColors.GrayText);
             panel1.Invalidate();
@@ -190,31 +190,29 @@ namespace OOP_LAB_4
         {
             List<Shape> to_remove = new List<Shape>();
             List<Shape> to_add = new List<Shape>();
-            for(int i = 0; i < shapes.Count; i++)
+            for(int i = 0; i < shapeArray.shapes.Count; i++)
             {
-                if (shapes[i].getName() == CONST_SHAPE.Group)
+                if (shapeArray.shapes[i].getName() == CONST_SHAPE.Group)
                 {
-                    to_remove.Add(shapes[i]);
-                    for (int j = 0; j < ((CGroup)((Decorator)shapes[i]).getShape()).shapes.Count; ++j)
+                    to_remove.Add(shapeArray.shapes[i]);
+                    for (int j = 0; j < ((CGroup)((Decorator)shapeArray.shapes[i]).getShape()).shapes.Count; ++j)
                     {
-                        Shape temp = new Marked(((CGroup)((Decorator)shapes[i]).getShape()).shapes[j]);
+                        Shape temp = new Marked(((CGroup)((Decorator)shapeArray.shapes[i]).getShape()).shapes[j]);
                         to_add.Add(temp);
                     }
-                    ((CGroup)((Decorator)shapes[i]).getShape()).shapes.Clear();
+                    ((CGroup)((Decorator)shapeArray.shapes[i]).getShape()).shapes.Clear();
 
                 }
             }
             foreach(Shape shape in to_remove)
             {
-                shapes.Remove(shape);
+                shapeArray.shapes.Remove(shape);
             }
             foreach(Shape shape in to_add)
             {
-                shapes.Add(shape);
+                shapeArray.shapes.Add(shape);
             }
         }
-
-
 
 
         private void colorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -225,7 +223,7 @@ namespace OOP_LAB_4
         }
         private void button_setColor_Click(object sender, EventArgs e)
         {
-            foreach (Shape temp in shapes)
+            foreach (Shape temp in shapeArray.shapes)
             {
                 if(temp is Marked)
                 {
@@ -254,7 +252,7 @@ namespace OOP_LAB_4
         {
             g.Clear(SystemColors.GrayText);
 
-            foreach (Shape c in shapes)
+            foreach (Shape c in shapeArray.shapes)
             {
                 c.Draw(g);
             }
@@ -262,7 +260,7 @@ namespace OOP_LAB_4
         private void Form1_Resize(object sender, EventArgs e)
         {
             g = panel1.CreateGraphics();
-            foreach (Shape shape in shapes)
+            foreach (Shape shape in shapeArray.shapes)
             {
                 shape.move(panel1.Size, 0,0);
                 shape.resize(panel1.Size, 0);
@@ -274,11 +272,33 @@ namespace OOP_LAB_4
         {
             AllocConsole();
         }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
+                return;
+            shapeArray.shapes.Clear();
+            filename = openFileDialog1.FileName;
+            shapeArray.loadShapes(filename, shapeFactory);
+            panel1.Invalidate();
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(shapeArray.shapes.Count > 0)
+            {
+                if(filename == "")
+                {
+                    if(saveFileDialog1.ShowDialog() == DialogResult.Cancel)
+                        return;
+                    filename = saveFileDialog1.FileName;
+                }
+                shapeArray.saveShapes(filename);
+            }
+        }
+
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool AllocConsole();
-
-
     }
-   
 }
