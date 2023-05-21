@@ -10,7 +10,6 @@ namespace OOP_LAB_4
     public partial class Form1 : Form
     {
         List<Shape> shapes;
-        List<Shape> selectedShapes;
 
         Shape createdShape;
 
@@ -30,7 +29,6 @@ namespace OOP_LAB_4
         public Form1()
         {
             shapes = new();
-            selectedShapes = new();
             shapeFactory = new MyShapeFactory();
             InitializeComponent();
 
@@ -53,24 +51,11 @@ namespace OOP_LAB_4
             g = panel1.CreateGraphics();
             DoubleBuffered = true;
         }
-
         public void createShape(CONST_SHAPE choosenShape)
         {
             createdShape = shapeFactory.create(choosenShape);
             createdShape = new Marked(createdShape);
             createdShape.setColor(color);
-
-            shapes.Add(createdShape);
-            selectedShapes.Add(createdShape);
-        }
-
-        public void printList()
-        {
-            Console.WriteLine("- - - \n");
-            foreach (Shape shape in shapes)
-            {
-                Console.WriteLine(shape.getName() + " " + shape.getPoint().ToString() + " " + shape.getSize().ToString() );
-            }
         }
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
@@ -86,18 +71,13 @@ namespace OOP_LAB_4
                     {
                         for (int j = 0; j < shapes.Count; ++j)
                         {
-                            if ( j != i )
-                            {
-                                selectedShapes.Remove(shapes[j]);
-                            }
                             shapes[j] = new UnMarked(shapes[j]);
                         }
                     }
 
-                    if (!selectedShapes.Contains(shapes[i]))
+                    if (shapes[i] is not Marked)
                     {
                         shapes[i] = new Marked(shapes[i]);
-                        selectedShapes.Add(shapes[i]);
                     }
                 }
             }
@@ -109,9 +89,9 @@ namespace OOP_LAB_4
                     {
                         shapes[j] = new UnMarked(shapes[j]);
                     }
-                    selectedShapes.Clear();
                 }
                 createShape(selectedShape);
+                shapes.Add(createdShape);
             }
             panel1.Invalidate();
         }
@@ -123,14 +103,13 @@ namespace OOP_LAB_4
                 panel1.Invalidate();
             }
         }
-
-        
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
             if(create)
             {
                 create = false;
             }
+            Console.WriteLine(panel1.Size);
             panel1.Invalidate();
         }
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -152,22 +131,23 @@ namespace OOP_LAB_4
                     delta = -10;break;
                 case Keys.Delete:
                     shapes.Clear();
-                    selectedShapes.Clear();
                     break;
             }
             if(dx != 0 || dy != 0)
             {
-                for (int j = 0; j < selectedShapes.Count; ++j)
+                foreach (Shape temp in shapes)
                 {
-                    selectedShapes[j].move(panel1.Size, dx, dy);
+                    if(temp is Marked)
+                        temp.move(panel1.Size, dx, dy);
                 }
                 dx = 0; dy = 0;
             }
             if(delta != 0)
             {
-                for (int j = 0; j < selectedShapes.Count; ++j)
+                foreach (Shape temp in shapes)
                 {
-                    selectedShapes[j].resize(panel1.Size, delta);
+                    if(temp is Marked)
+                        temp.resize(panel1.Size, delta);
                 }
                 delta = 0;
             }
@@ -175,62 +155,61 @@ namespace OOP_LAB_4
             panel1.Invalidate();
         }
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-            g.Clear(SystemColors.Control);
 
-            foreach (Shape c in shapes)
-            {
-                c.Draw(g);
-            }
-        }
-        
-        private void toolStripTextBoxCircle_Click(object sender, EventArgs e)
-        {
-            selectedShape = CONST_SHAPE.Circle;
-        }
-        
-        private void toolStripTextBoxRectangle_Click(object sender, EventArgs e)
-        {
-            selectedShape = CONST_SHAPE.Rectangle;
-        }
-
-        
-        private void Form1_Resize(object sender, EventArgs e)
-        {
-            foreach(Shape shape in shapes)
-            {
-                shape.resize(panel1.Size, 0);    
-            }
-            
-            panel1.Invalidate();
-        }
 
         private void button_group_Click(object sender, EventArgs e)
         {
+            List<Shape> to_keep = new List<Shape>();
 
+            createShape(CONST_SHAPE.Group);
+
+            for(int i = 0; i < shapes.Count; i++)
+            {
+                if (shapes[i] is Marked)
+                {
+                    ((CGroup)((Decorator)createdShape).getShape()).add(panel1.Size,shapes[i]);
+                }
+                else
+                {
+                    shapes[i] = new UnMarked(shapes[i]);
+                    to_keep.Add(shapes[i]);
+                }
+            }
+            shapes.Clear();
+
+            for (int i = 0; i < to_keep.Count; i++)
+            {
+                shapes.Add(to_keep[i]);
+            }
+            shapes.Add(createdShape);
+            to_keep.Clear();
+            g.Clear(SystemColors.GrayText);
+            panel1.Invalidate();
         }
-
         private void button_ungroup_Click(object sender, EventArgs e)
         {
-            List<Shape> temp = new(); 
-            int num = selectedShapes.Count;
-            for(int i = 0; i < num; ++i)
+            List<Shape> to_remove = new List<Shape>();
+            for(int i = 0; i < shapes.Count; i++)
             {
-                if (selectedShapes[i].getName() == CONST_SHAPE.Group)
+                if (shapes[i].getName() == CONST_SHAPE.Group)
                 {
-                    temp.Add(selectedShapes[i]);
-                    ((CGroup)((Decorator)selectedShapes[i]).getShape()).unGroup(selectedShapes);
+                    to_remove.Add(shapes[i]);
+                    for (int j = 0; j < ((CGroup)((Decorator)shapes[i]).getShape()).shapes.Count; ++j)
+                    {
+                        Shape temp = new Marked(((CGroup)((Decorator)shapes[i]).getShape()).shapes[j]);
+                        shapes.Add(temp);
+                    }
+                    ((CGroup)((Decorator)shapes[i]).getShape()).shapes.Clear();
                 }
             }
-            for(int i = 0; i < temp.Count; ++i)
+            foreach(Shape shape in to_remove)
             {
-                if (selectedShapes.Contains(temp[i]))
-                {
-                    selectedShapes.Remove(temp[i]);
-                }
+                shapes.Remove(shape);
             }
         }
+
+
+
 
         private void colorToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -240,9 +219,12 @@ namespace OOP_LAB_4
         }
         private void button_setColor_Click(object sender, EventArgs e)
         {
-            foreach (Shape shape in selectedShapes)
+            foreach (Shape temp in shapes)
             {
-                shape.setColor(color);
+                if(temp is Marked)
+                {
+                    temp.setColor(color);
+                }
             }
             panel1.Invalidate();
         }
@@ -253,6 +235,34 @@ namespace OOP_LAB_4
         private void toolStripTextBoxTriangle_Click(object sender, EventArgs e)
         {
             selectedShape = CONST_SHAPE.Triangle;
+        }
+        private void toolStripTextBoxCircle_Click(object sender, EventArgs e)
+        {
+            selectedShape = CONST_SHAPE.Circle;
+        }
+        private void toolStripTextBoxRectangle_Click(object sender, EventArgs e)
+        {
+            selectedShape = CONST_SHAPE.Rectangle;
+        }
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+            g.Clear(SystemColors.GrayText);
+
+            foreach (Shape c in shapes)
+            {
+                c.Draw(g);
+            }
+        }
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            g = panel1.CreateGraphics();
+            foreach (Shape shape in shapes)
+            {
+                shape.move(panel1.Size, 0,0);
+                shape.resize(panel1.Size, 0);
+            }
+
+            panel1.Invalidate();
         }
         private void Form1_Load(object sender, EventArgs e)
         {

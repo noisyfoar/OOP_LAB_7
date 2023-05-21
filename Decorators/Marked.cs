@@ -16,6 +16,5 @@ namespace OOP_LAB_4.Decorators
             Pen pen = new Pen(Color.Red);
             g.DrawRectangle(pen, rect);
         }
-
     }
 }

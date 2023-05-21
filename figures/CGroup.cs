@@ -1,10 +1,10 @@
-﻿using OOP_LAB_4.factory;
+﻿using OOP_LAB_4.Decorators;
 
 namespace OOP_LAB_4.figures
 {
     public class CGroup : Shape
     {
-        protected List<Shape> shapes;
+        public List<Shape> shapes { get; set; }
 
         public CGroup() : base()
         {
@@ -17,55 +17,66 @@ namespace OOP_LAB_4.figures
             shapes = new List<Shape>();
             if(group.getName() == CONST_SHAPE.Group)
             {
-                add(((CGroup)group).shapes);
-            }
-            name = CONST_SHAPE.Group;
-        }
-        
-        
-        public virtual void add(List<Shape> new_shapes)
-        {
-            foreach(Shape shape in new_shapes)
-            {
-                if (!shapes.Contains(shape))
+                foreach(Shape shape in ((CGroup)group).shapes)
                 {
                     shapes.Add(shape);
                 }
             }
+            name = CONST_SHAPE.Group;
+        }
+        public void add(Size imageSize, Shape shape)
+        {
+            shape = new UnMarked(shape);
+            shapes.Add(shape);
+            new_size(imageSize);
         }
         public void new_size(Size imageSize)
         {
-            Point temp_point = new(imageSize.Width, imageSize.Height);
-            Size temp_size = new(0,0);
-
+            Point left_up = new(imageSize.Width, imageSize.Height);
+            Point right_bottom = new Point(0, 0);
 
             foreach (Shape shape in shapes)
             {
-                Size shapeSize = shape.getSize();
-                Point p0 = shape.getPoint();
-
-                if (temp_point.X > p0.X)
+                Point new_left_up = shape.getPoint();
+                Point new_right_bottom = new(new_left_up.X + shape.getSize().Width, new_left_up.Y + shape.getSize().Height);
+                if (left_up.X > new_left_up.X)
                 {
-                    temp_point.X = p0.X;
+                    left_up.X = new_left_up.X;
                 }
-                if (temp_point.Y > p0.Y)
+                if (left_up.Y > new_left_up.Y)
                 {
-                    temp_point.Y = p0.Y;
+                    left_up.Y = new_left_up.Y;
                 }
-                if (temp_point.X + temp_size.Width < p0.X + shapeSize.Width)
+                if (new_right_bottom.X > right_bottom.X)
                 {
-                    temp_size.Width = p0.X + shapeSize.Width - temp_point.X;
+                    right_bottom.X = new_right_bottom.X;
                 }
-                if (temp_point.Y + temp_size.Height < p0.Y + shapeSize.Height)
+                if (new_right_bottom.Y > right_bottom.Y)
                 {
-                    temp_size.Height = p0.Y + shapeSize.Height - temp_point.Y;
+                    right_bottom.Y = new_right_bottom.Y;
                 }
+                
             }
 
-            p0 = temp_point;
-            shapeSize= temp_size;
+            p0 = left_up;
+            shapeSize= new Size(right_bottom.X - left_up.X, right_bottom.Y - left_up.Y);
 
             move(imageSize, 0, 0);
+        }
+        public override void move(Size imageSize, int dx, int dy)
+        {
+            int temp_dx = dx, temp_dy = dy;
+            Point old_p0 = p0;
+
+            base.move(imageSize, temp_dx, temp_dy);
+
+            temp_dx = p0.X - old_p0.X;
+            temp_dy = p0.Y - old_p0.Y;
+
+            for (int i = 0; i < shapes.Count; i++)
+            {
+                shapes[i].move(imageSize, temp_dx, temp_dy);
+            }
         }
         public override void setColor(Color new_color)
         {
@@ -96,17 +107,6 @@ namespace OOP_LAB_4.figures
             {
                 shape.resize(imageSize, delta);
             }
-        }
-        public void unGroup(List<Shape> new_shapes)
-        {
-            foreach (Shape shape in shapes)
-            {
-                if (!new_shapes.Contains(shape))
-                {
-                    new_shapes.Add(shape);
-                }
-            }
-            shapes.Clear();
         }
     }
 }

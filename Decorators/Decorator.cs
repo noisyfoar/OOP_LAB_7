@@ -25,7 +25,6 @@ namespace OOP_LAB_4.Decorators
             return decoratedShape;
         }
 
-
         protected void getInfoFromShape()
         {
             shapeSize = decoratedShape.getSize();
@@ -50,6 +49,11 @@ namespace OOP_LAB_4.Decorators
         public override void setColor(Color new_color)
         {
             decoratedShape.setColor(new_color);
+        }
+
+        public override CONST_SHAPE getName()
+        {
+            return decoratedShape.getName();
         }
 
         public override bool inShape(int x, int y)

@@ -20,7 +20,6 @@
             p0 = shape.getPoint();
         }
         public abstract void Draw(Graphics g);
-
         public virtual void resize(Size imageSize, int delta)
         {
             Size newSize = new(shapeSize.Width + delta, shapeSize.Height + delta);
@@ -86,7 +85,7 @@
 
             if( new_p0.X + shapeSize.Width > imageSize.Width)
             {
-                new_p0.X = imageSize.Width - shapeSize.Width - 3;
+                new_p0.X = imageSize.Width - shapeSize.Width;
             }
             if(new_p0.X < 0)
             {
@@ -94,7 +93,7 @@
             }
             if(new_p0.Y + shapeSize.Height > imageSize.Height)
             {
-                new_p0.Y = imageSize.Height - shapeSize.Height - 3;
+                new_p0.Y = imageSize.Height - shapeSize.Height;
             }
             if(new_p0.Y < 0)
             {
@@ -102,7 +101,6 @@
             }
             p0 = new_p0;
         }
-
 
         public virtual void setColor(Color new_color)
         {
@@ -114,7 +112,7 @@
             return color;
         }
 
-        public CONST_SHAPE getName()
+        public virtual CONST_SHAPE getName()
         {
             return name;
         }
@@ -123,7 +121,6 @@
         {
             return p0;
         }
-
         public Size getSize()
         {
             return shapeSize;

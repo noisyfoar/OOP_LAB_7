@@ -2,11 +2,11 @@
 {
     public enum CONST_SHAPE
     {
-        Circle,
-        Rectangle,
-        Triangle,
-        Group,
-        Marked,
-        UnMarked
+        Circle = 'c',
+        Rectangle = 'r',
+        Triangle = 't',
+        Group = 'g',
+        Marked = 'm',
+        UnMarked = 'u'
     }
 }
