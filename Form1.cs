@@ -51,6 +51,7 @@ namespace OOP_LAB_4
             g = panel1.CreateGraphics();
             DoubleBuffered = true;
         }
+        
         public void createShape(CONST_SHAPE choosenShape)
         {
             createdShape = shapeFactory.create(choosenShape);
@@ -109,7 +110,6 @@ namespace OOP_LAB_4
             {
                 create = false;
             }
-            Console.WriteLine(panel1.Size);
             panel1.Invalidate();
         }
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -189,6 +189,7 @@ namespace OOP_LAB_4
         private void button_ungroup_Click(object sender, EventArgs e)
         {
             List<Shape> to_remove = new List<Shape>();
+            List<Shape> to_add = new List<Shape>();
             for(int i = 0; i < shapes.Count; i++)
             {
                 if (shapes[i].getName() == CONST_SHAPE.Group)
@@ -197,14 +198,19 @@ namespace OOP_LAB_4
                     for (int j = 0; j < ((CGroup)((Decorator)shapes[i]).getShape()).shapes.Count; ++j)
                     {
                         Shape temp = new Marked(((CGroup)((Decorator)shapes[i]).getShape()).shapes[j]);
-                        shapes.Add(temp);
+                        to_add.Add(temp);
                     }
                     ((CGroup)((Decorator)shapes[i]).getShape()).shapes.Clear();
+
                 }
             }
             foreach(Shape shape in to_remove)
             {
                 shapes.Remove(shape);
+            }
+            foreach(Shape shape in to_add)
+            {
+                shapes.Add(shape);
             }
         }
 
