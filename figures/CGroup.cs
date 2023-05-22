@@ -131,6 +131,7 @@ namespace OOP_LAB_4.figures
             {
                 shape.resize(imageSize, delta);
             }
+            new_size(imageSize);
         }
     }
 }

@@ -37,6 +37,10 @@ namespace OOP_LAB_4
             panel1.MouseMove+= Form1_MouseMove;
 
 
+            openFileDialog1.Filter = "txt files (*.txt)|*.txt";
+            saveFileDialog1.Filter = "txt files (*.txt)|*.txt";
+            openFileDialog1.Multiselect = false;
+
             color = Color.Black;
             pictureBox_color.Refresh();
 
@@ -55,7 +59,6 @@ namespace OOP_LAB_4
         public void createShape(CONST_SHAPE choosenShape)
         {
             createdShape = shapeFactory.create((char)choosenShape);
-            createdShape = new Marked(createdShape);
             createdShape.setColor(color);
         }
 
@@ -92,6 +95,7 @@ namespace OOP_LAB_4
                     }
                 }
                 createShape(selectedShape);
+                createdShape = new Marked(createdShape);
                 shapeArray.shapes.Add(createdShape);
             }
             panel1.Invalidate();
@@ -162,7 +166,7 @@ namespace OOP_LAB_4
             List<Shape> to_keep = new List<Shape>();
 
             createShape(CONST_SHAPE.Group);
-
+            createdShape = new Marked(createdShape);
             for(int i = 0; i < shapeArray.shapes.Count; i++)
             {
                 if (shapeArray.shapes[i] is Marked)
@@ -181,9 +185,10 @@ namespace OOP_LAB_4
             {
                 shapeArray.shapes.Add(to_keep[i]);
             }
+            createdShape = new Marked(createdShape);
             shapeArray.shapes.Add(createdShape);
             to_keep.Clear();
-            g.Clear(SystemColors.GrayText);
+
             panel1.Invalidate();
         }
         private void button_ungroup_Click(object sender, EventArgs e)
@@ -212,6 +217,7 @@ namespace OOP_LAB_4
             {
                 shapeArray.shapes.Add(shape);
             }
+            panel1.Invalidate();
         }
 
 
